@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Purchase Form</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div>
+                <!-- PurchaseDetail formset -->
+                {{ formset.management_form }}
+                <div id="formset">
+                    {% for form in formset %}
+                        <!-- {% with form.instance as pd_instance %} -->
+                        <div class="formset-row">
+                            {{ form.id }}
+                            {{ form.product_variation.label_tag }}
+                            {{ form.product_variation }}
+                            {{ form.quantity_purchased.label_tag }}
+                            {{ form.quantity_purchased }}
+                            <button type="button" class="delete-row">Delete</button>
+                        </div>
+                        <!-- {% endwith %} -->
+                        {% if form.errors %}
+                            <div class="formset-errors">
+                                {% for field, error in form.errors.items %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}                        
+                    {% endfor %}
+                    <!-- Display non-form errors -->
+                    {% if formset.non_form_errors %}
+                        <div class="formset-non-form-errors">
+                            {% for error in formset.non_form_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}                      
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="button" id="add-product">Add Product</button>
+                <button class="btn btn-outline-info" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const formset = document.getElementById("formset");
+            const totalForms = document.getElementById('id_purchase_detail-TOTAL_FORMS');
+
+            function PlusCaps() {
+                nextValue = parseInt(totalForms.value) + 1;
+                setNextValue(nextValue);
+            }
+
+            function MinusCaps() {
+                nextValue = parseInt(totalForms.value) - 1;
+                setNextValue(nextValue);
+            }           
+
+            function setNextValue(nextValue) {
+                totalForms.value = nextValue;
+            }            
+
+            // function updateFormAttributes(row, index) {
+            //     console.log('jshermit1');
+            //     console.log(row);
+            //     console.log('jshermit1');
+            //     row.querySelectorAll('label, select, input').forEach(function (element) {
+            //         const name = element.getAttribute('name');
+            //         if (name) {
+            //             element.setAttribute('name', name.replace('-0-', `-${index}-`));
+            //         }
+            //         const id = element.getAttribute('id');
+            //         if (id) {
+            //             element.setAttribute('id', id.replace('-0-', `-${index}-`));
+            //         }
+            //         const vfor = element.getAttribute('for');
+            //         if (vfor) {
+            //             element.setAttribute('for', vfor.replace('-0-', `-${index}-`));
+            //         }
+            //     });
+            // }         
+            
+            function renumberAttributes() {
+                const outer = document.getElementById('formset');
+                const innerDivs = outer.querySelectorAll('.formset-row');
+
+                innerDivs.forEach(function (div, index) {
+                    div.querySelectorAll('label, select, input').forEach(function (element) {
+                        const attributes = ['for', 'name', 'id'];
+
+                        attributes.forEach(function (attr) {
+                            let value = element.getAttribute(attr);
+                            if (value) {
+                                // Replace the numeric part of the attribute with the new index
+                                value = value.replace(/\d+/g, index);
+                                element.setAttribute(attr, value);
+                            }
+                        });
+                    });
+                });
+            }
+
+            formset.addEventListener("click", function (event) {
+                if (event.target.classList.contains("delete-row")) {
+                    const row = event.target.parentElement;
+                    row.remove();
+                    MinusCaps();
+                    // updateFormAttributes(formset.innerHTML, parseInt(totalForms.value));
+                    renumberAttributes();
+                }
+            });
+
+            const addProductButton = document.getElementById("add-product");
+            addProductButton.addEventListener("click", function () {
+                const firstRow = formset.querySelector(".formset-row");
+                if (firstRow) {
+                    const newRow = firstRow.cloneNode(true);
+                    formset.appendChild(newRow);
+                    PlusCaps();
+                    // updateFormAttributes(newRow, parseInt(totalForms.value) - 1);
+                    renumberAttributes();
+                }
+            });
+        });
+    </script>
+{% endblock content %}

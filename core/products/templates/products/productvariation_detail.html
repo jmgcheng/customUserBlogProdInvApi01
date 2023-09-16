@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <article class="media content-section">
+    <div class="media-body">
+      <div class="row">
+        <div class="col col-sm-4 col-12">
+          <div class="text-center">
+          {% if not object.image_url == None %}
+            <img class="article-img" src="{{ object.image_url }}">
+          {% else %}
+            <img class="article-img" src="https://placehold.co/300" />
+          {% endif %}
+          </div>             
+        </div>
+        <div class="col col-sm-8 col-12">
+          <h4 class="article-title">{{ object.product.name }} - {{ object.name }}</h4>
+          <div class="article-metadata">
+            <!-- <a class="mr-2" href="">{{ object.author }}</a> -->
+            <!-- <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small> -->
+            {% if user.is_superuser %}
+              <div>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'product-variation-edit' object.id %}">Update</a>
+                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'product-variation-delete' object.id %}">Delete</a>
+              </div>
+            {% endif %}
+          </div>
+          <div>
+            {% if not object.unit == None %}
+            <p>
+              Unit: {{ object.unit }}
+            </p>
+            {% endif %}
+            {% if not object.size == None %}
+            <p>
+              Size: {{ object.size }}
+            </p>
+            {% endif %}
+            {% if not object.color == None %}
+            <p>
+              Color: {{ object.color }}
+            </p>
+            {% endif %}
+            <p>
+              Qty: {{ current_quantity }}
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      
+      <!-- <p class="article-content">
+      </p> -->
+      <div>
+        <h5>Product Details</h5>
+        <!-- {% if not object.excerpt == '' %}
+        <p>
+            Excerpt: {{ object.excerpt }}
+        </p>
+        {% endif %} -->
+        {% if not object.description == '' %}
+        <p class="article-content">
+            <strong>Description:</strong> {{ object.description }}
+        </p>
+        {% endif %}
+      </div>
+
+      
+      {% if user.is_authenticated %}
+      <br>
+      <div>
+        <form method="post">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Add a Comment</legend>
+                {{ product_variation_comment_form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Submit</button>
+            </div>
+        </form>        
+      </div>
+      {% endif %}
+
+      <br>
+      <hr>
+      <div>
+        <h6>Comments</h6>
+        <ul>
+            {% for comment in object.comments.all %}
+                <li>
+                  {{ comment.content }}
+                  <br>
+                  by {{ comment.user }}
+                </li>
+                <br>
+            {% empty %}
+                <li>No comments yet.</li>
+            {% endfor %}
+        </ul>
+      </div>
+
+    </div>
+  </article>
+{% endblock content %}
