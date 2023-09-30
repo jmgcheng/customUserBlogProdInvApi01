@@ -5,7 +5,7 @@ pip 22.3
 
 In requirements.txt
 ```
-pip freeze > requirements
+pip freeze > requirements.txt
 pip install -r requirements.txt
 ```
 asgiref==3.7.2
@@ -384,4 +384,39 @@ DELETE
 Headers
     Authorization
         token theTokenThatYouGot
+```
+
+
+## Setup - Step 4 - API - CORS
+1. Install django-cors-headers
+```
+pip install django-cors-headers
+```
+
+2. settings.py Setup below works on local BUT still unsure if same in live
+```
+INSTALLED_APPS = [
+    ...
+    'corsheaders',    
+    ...
+]
+
+MIDDLEWARE = [
+    ...
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+]
+
+# Allow all origins in development; you may want to restrict this in production
+CORS_ALLOW_ALL_ORIGINS = os.getenv('DJANGO_CORS_ALLOW_ALL_ORIGINS', default=False)
+
+# List of allowed origins (comma-separated)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",  # Replace with the URL of your Angular app
+    # Add other allowed origins here as needed
+]
+
+# Other CORS settings (optional)
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+CORS_ALLOW_HEADERS = ['*', 'Authorization']
 ```

@@ -45,7 +45,9 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'api',    
+    'api',
+
+    'corsheaders',    
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -63,6 +65,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -184,3 +189,19 @@ EMAIL_HOST_PASSWORD = 'passGeneratedByGoogleAppPasswords'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+# Allow all origins in development; you may want to restrict this in production
+CORS_ALLOW_ALL_ORIGINS = os.getenv('DJANGO_CORS_ALLOW_ALL_ORIGINS', default=False)
+
+# List of allowed origins (comma-separated)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",  # Replace with the URL of your Angular app
+    # Add other allowed origins here as needed
+]
+
+# Other CORS settings (optional)
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+CORS_ALLOW_HEADERS = ['*', 'Authorization']

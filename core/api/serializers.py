@@ -15,7 +15,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Purchase
-        fields = ('code', 'purchase_detail')  # Include other fields from the Purchase model as needed
+        fields = ('id', 'code', 'date', 'purchase_detail')  # Include other fields from the Purchase model as needed
 
     def create(self, validated_data):
         # Extract and create PurchaseDetail instances
@@ -74,7 +74,7 @@ class SaleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sale
-        fields = ('code', 'sale_detail')  # Include other fields from the Purchase model as needed
+        fields = ('id', 'code', 'date', 'sale_detail')  # Include other fields from the Purchase model as needed
 
     def create(self, validated_data):
         # Extract and create SaleDetail instances
@@ -143,7 +143,11 @@ class ProductVariationSerializer(serializers.ModelSerializer):
     unit = UnitSerializer()
     size = SizeSerializer()
     color = ColorSerializer()
+    current_quantity = serializers.SerializerMethodField()  # Add this field
 
     class Meta:
         model = ProductVariation
         fields = '__all__'
+
+    def get_current_quantity(self, obj):
+        return obj.current_inventory_quantity()        
