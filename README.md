@@ -420,3 +420,9 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = ['*', 'Authorization']
 ```
+
+# Git clone setup
+- it seems there's an issue when doing clone and using pip install -r requirements.txt
+	- I need more trial installation next time to see what's best and log here
+- what I did was git clone, then paste a venv and db.sqlite3 from a similar project
+	- what's left was copy paste static media folders
