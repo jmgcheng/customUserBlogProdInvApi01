@@ -426,3 +426,171 @@ CORS_ALLOW_HEADERS = ['*', 'Authorization']
 	- I need more trial installation next time to see what's best and log here
 - what I did was git clone, then paste a venv and db.sqlite3 from a similar project
 	- what's left was copy paste static media folders
+
+# Amazon EC2 Cloud Terminal Setup
+1. update ubuntu
+```
+sudo apt-get update
+```
+
+2. upgrade packages
+```
+sudo apt-get upgrade
+```
+
+3. check python version
+```
+python3 --version
+```
+
+4. clone repo
+```
+git clone https://github.com/jmgcheng/customUserBlogProdInvApi01.git
+```
+
+5. go in your project
+```
+cd customUserBlogProdInvApi01
+```
+
+6. install project requirements.txt
+```
+cd core
+pip install -r requirements.txt
+cd ..
+```
+
+7. install python virtual environment
+```
+sudo apt-get install python3-venv
+```
+
+8. create python virtual environment
+```
+python3 -m -venv env
+```
+
+9. activate python virtual environment
+```
+source env/bin/activate
+```
+
+10. cd back until you reach ~$
+```
+cd ..
+```
+
+11. install nginx
+```
+sudo apt-get install -y nginx
+```
+
+12. install gunicorn
+```
+pip install gunicorn
+```
+
+13. check packages installed in your virtual environment
+```
+pip list
+```
+
+14. check your public ip address in a browser
+```
+00.000.000.000
+```
+
+15. install supervisor
+```
+sudo apt-get install supervisor
+```
+
+16. create configuration file for supervisor
+```
+cd /etc/supervisor/conf.d/
+```
+17. create gunicorn conf
+```
+sudo touch gunicorn.conf
+sudo nano gunicorn.conf
+```
+```
+[program:gunicorn]
+directory=/home/ubuntu/customUserBlogProdInvApi01/core
+command=/home/ubuntu/customUserBlogProdInvApi01/env/bin/gunicorn --workers 3 --bind unix:/home/ubuntu/customUserBlogProdInvApi01/core/app.sock core.wsgi:application  
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/gunicorn/gunicorn.err.log
+stdout_logfile=/var/log/gunicorn/gunicorn.out.log
+
+[group:guni]
+programs:gunicorn	
+```    
+save and exit gunicorn.conf
+```
+ctrl+o
+enter
+ctrl+x
+```    
+18. create log for errors
+```
+sudo mkdir /var/log/gunicorn
+```
+19. tell supervisor about our gunicorn file
+```
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl status
+```
+
+20. go back directory untill you reach inside /etc$
+```
+cd ..
+```
+
+21. setup nginx. go to nginx
+```
+cd nginx
+```
+22. setup nginx configuration
+```
+sudo nano nginx.conf
+```
+23. change `www-data` into `root`. Save and exit
+24. go to sites-available
+```
+cd sites-available
+```
+25. setup django.conf. Add your public address in server_name	
+```
+sudo touch django.conf
+sudo nano django.conf
+```
+```
+server{
+
+    listen 80;
+    server_name 00.000.000.000;
+
+    
+    location / {
+
+        include proxy_params;
+        proxy_pass http://unix:/home/ubuntu/customUserBlogProdInvApi01/core/app.sock;
+
+    }
+
+}	
+```
+26. test configuration to make sure that everything is working as it should
+```
+sudo nginx -t
+```
+27. enable our site to make it live
+```
+sudo ln django.conf /etc/nginx/sites-enabled
+sudo service nginx restart
+```
+
+28. visit your site in the browser
+00.000.000.000
